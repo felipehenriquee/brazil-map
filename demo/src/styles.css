@@ -1,0 +1,297 @@
+:root {
+    --background: #f1f5f9;
+    --surface: #ffffff;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --accent: #4f46e5;
+    --accent-soft: #eef2ff;
+    color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #0b1120;
+        --surface: #111827;
+        --text: #e2e8f0;
+        --text-muted: #94a3b8;
+        --border: #1f2937;
+        --accent: #818cf8;
+        --accent-soft: #1e1b4b;
+        color-scheme: dark;
+
+        --bm-area-stroke: #111827;
+        --bm-area-highlight: #f8fafc;
+        --bm-context-fill: #1f2937;
+        --bm-context-stroke: #111827;
+        --bm-border-state: #111827;
+        --bm-border-region: #e2e8f0;
+        --bm-outline: #475569;
+        --bm-water-fill: #1e3a5f;
+        --bm-tooltip-background: #1f2937;
+        --bm-tooltip-text: #e2e8f0;
+        --bm-tooltip-text-muted: #94a3b8;
+        --bm-tooltip-border: #334155;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+}
+h1, h2 {
+    margin: 0;
+}
+button, select {
+    font: inherit;
+}
+
+.app {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 16px 64px;
+}
+.header h1 {
+    font-size: 26px;
+    letter-spacing: -0.01em;
+}
+.header p {
+    margin: 4px 0 0;
+    color: var(--text-muted);
+}
+
+.breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 16px 0;
+    font-size: 15px;
+}
+.breadcrumb button {
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--accent);
+    cursor: pointer;
+}
+.breadcrumb button:disabled {
+    color: var(--text);
+    font-weight: 600;
+    cursor: default;
+}
+.breadcrumb span[aria-hidden] {
+    color: var(--text-muted);
+}
+.breadcrumb-current {
+    font-weight: 600;
+}
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.controls,
+.map-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+}
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.control {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+.control > span,
+.control > legend {
+    padding: 0;
+    font-size: 13px;
+    font-weight: 600;
+}
+.control small {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+.control select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background-color: var(--surface);
+    color: var(--text);
+}
+.segmented {
+    display: flex;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+}
+.segmented button {
+    flex: 1;
+    padding: 8px 6px;
+    border: none;
+    background: none;
+    color: var(--text);
+    font-size: 13.5px;
+    cursor: pointer;
+}
+.segmented button + button {
+    border-left: 1px solid var(--border);
+}
+.segmented button[aria-pressed="true"] {
+    background-color: var(--accent);
+    color: #fff;
+}
+.subregions {
+    margin-bottom: 16px;
+}
+.subregions h2 {
+    margin: 0 0 10px;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background-color: var(--surface);
+    color: var(--text);
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.chip:hover {
+    border-color: var(--text-muted);
+}
+.chip[aria-pressed="true"] {
+    border-color: var(--accent);
+    background-color: var(--accent-soft);
+}
+.chip-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+.check input {
+    accent-color: var(--accent);
+}
+:is(button, select, input):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.map-card {
+    min-width: 0;
+}
+.map-card .bm-map {
+    max-width: 760px;
+    margin: 0 auto;
+}
+/* zoomed into a tall state the map would outgrow the screen; the shape stays centered */
+.map-card .bm-svg {
+    max-height: 75vh;
+}
+/* on narrow screens the map comes before the controls */
+.map-card {
+    order: -1;
+}
+.loading {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.details {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+.details-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.details h2 {
+    font-size: 18px;
+}
+.details h2 span {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+.details-header button {
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background-color: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+}
+.details dl {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 12px 0 0;
+}
+.details dt {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.details dd {
+    margin: 2px 0 0;
+}
+
+@media (min-width: 900px) {
+    .map-card {
+        order: 0;
+    }
+    .layout {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        align-items: start;
+    }
+    .controls {
+        position: sticky;
+        top: 16px;
+    }
+}

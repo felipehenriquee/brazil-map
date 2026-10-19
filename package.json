@@ -1,0 +1,15 @@
+{
+  "name": "brazil-map",
+  "private": true,
+  "type": "module",
+  "workspaces": ["packages/*", "demo"],
+  "scripts": {
+    "data": "npm run data -w brazil-svg-map",
+    "build:lib": "npm run build -w brazil-svg-map",
+    "dev": "npm run build:lib && npm run dev -w demo",
+    "dev:lib": "npm run dev -w brazil-svg-map",
+    "build": "npm run build:lib && npm run build -w demo",
+    "test": "npm test -w brazil-svg-map",
+    "typecheck": "npm run typecheck -w brazil-svg-map && npm run typecheck -w demo"
+  }
+}

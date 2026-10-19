@@ -1,0 +1,167 @@
+/*
+ * brazil-svg-map — default styles.
+ * To customize, override the --bm-* variables in a selector of your own (e.g. :root or .myMap).
+ */
+:root {
+    --bm-area-fill: #cbd5e1;
+    --bm-area-stroke: #ffffff;
+    --bm-area-stroke-width: 0.8px;
+    --bm-municipality-stroke-width: 0.3px;
+    --bm-area-highlight: #0f172a;
+    --bm-context-fill: #e8edf3;
+    --bm-context-stroke: #ffffff;
+    --bm-water-fill: #bfdbfe;
+    --bm-border-state: #ffffff;
+    --bm-border-state-width: 1.2px;
+    --bm-border-region: #475569;
+    --bm-border-region-width: 1.6px;
+    --bm-outline: #94a3b8;
+    --bm-outline-width: 1px;
+    --bm-transition: .2s ease;
+
+    --bm-region-north: #22c55e;
+    --bm-region-northeast: #f97316;
+    --bm-region-southeast: #8b5cf6;
+    --bm-region-south: #3b82f6;
+    --bm-region-centralWest: #eab308;
+
+    --bm-tooltip-background: #ffffff;
+    --bm-tooltip-text: #0f172a;
+    --bm-tooltip-text-muted: #64748b;
+    --bm-tooltip-border: #e2e8f0;
+    --bm-tooltip-radius: 12px;
+    --bm-tooltip-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+    --bm-tooltip-image-background: #e8edf3;
+}
+
+.bm-map {
+    position: relative;
+}
+.bm-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+/* line widths stay the same in pixels when the view zooms into a state */
+.bm-svg path {
+    vector-effect: non-scaling-stroke;
+}
+
+.bm-area {
+    fill: var(--bm-area-fill);
+    stroke: var(--bm-area-stroke);
+    stroke-width: var(--bm-area-stroke-width);
+    stroke-linejoin: round;
+    transition: fill var(--bm-transition);
+}
+.bm-map[data-level="municipality"] .bm-area {
+    stroke-width: var(--bm-municipality-stroke-width);
+}
+.bm-area[data-highlighted] {
+    fill: var(--bm-area-highlight);
+}
+.bm-target {
+    cursor: pointer;
+    outline: none;
+}
+.bm-target:focus-visible .bm-area {
+    stroke: var(--bm-area-highlight);
+    stroke-width: 2.5px;
+}
+
+.bm-context path {
+    fill: var(--bm-context-fill);
+    stroke: var(--bm-context-stroke);
+    stroke-width: var(--bm-area-stroke-width);
+}
+/* overview shapes under detailed states: same color as the context, no visible edge */
+.bm-underlay path {
+    fill: var(--bm-context-fill);
+    stroke: var(--bm-context-fill);
+    stroke-width: var(--bm-area-stroke-width);
+    pointer-events: none;
+}
+.bm-water path {
+    fill: var(--bm-water-fill);
+    stroke: none;
+    pointer-events: none;
+}
+.bm-borders,
+.bm-outline {
+    fill: none;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: none;
+}
+.bm-borders-state {
+    stroke: var(--bm-border-state);
+    stroke-width: var(--bm-border-state-width);
+}
+.bm-borders-region {
+    stroke: var(--bm-border-region);
+    stroke-width: var(--bm-border-region-width);
+}
+.bm-outline {
+    stroke: var(--bm-outline);
+    stroke-width: var(--bm-outline-width);
+}
+/* detailed state outlines drawn over detailed municipalities */
+.bm-state-outlines path {
+    fill: none;
+    stroke: var(--bm-outline);
+    stroke-width: var(--bm-outline-width);
+    stroke-linejoin: round;
+    pointer-events: none;
+}
+
+.bm-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.bm-tooltip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    width: var(--bm-tooltip-width, 220px);
+    overflow: hidden;
+    background-color: var(--bm-tooltip-background);
+    color: var(--bm-tooltip-text);
+    border: 1px solid var(--bm-tooltip-border);
+    border-radius: var(--bm-tooltip-radius);
+    box-shadow: var(--bm-tooltip-shadow);
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .15s ease, visibility .15s;
+}
+.bm-tooltip[data-visible] {
+    opacity: 1;
+    visibility: visible;
+}
+.bm-tooltip-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    background-color: var(--bm-tooltip-image-background);
+}
+.bm-tooltip-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px;
+}
+.bm-tooltip-title {
+    font-size: 15px;
+    font-weight: 600;
+}
+.bm-tooltip-subtitle {
+    color: var(--bm-tooltip-text-muted);
+    font-size: 13px;
+}
