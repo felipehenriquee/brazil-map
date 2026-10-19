@@ -1,6 +1,7 @@
 import {
   memo,
   useEffect,
+  useId,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -72,8 +73,11 @@ export type BrazilMapProps = {
    * areas it rejects are treated like those outside `regions`/`states`. Keep it memoized.
    */
   areaFilter?: (area: MapArea) => boolean;
-  /** areas outside the filter: shown muted for context (default) or hidden */
-  context?: "show" | "hide";
+  /**
+   * the rest of the country when filtering: "show" (default) a muted silhouette without lines,
+   * "states" the other states (or regions) muted with their borders, "hide" nothing
+   */
+  context?: "show" | "states" | "hide";
   /** fit the view to the filtered area (default true) */
   zoomToFilter?: boolean;
   /** duration in ms of the zoom when the view changes (default 600; 0 jumps). Skipped with prefers-reduced-motion. */
@@ -289,25 +293,34 @@ export function BrazilMap({
   const water = level === "municipality" ? municipalities.filter((m) => m.water) : [];
 
   // ---- context (muted, not interactive) ----
+  // "show": the rest of the country as one silhouette, without any lines;
+  // "states": the other states (or regions) with their borders, as before
   const contextShapes = useMemo(() => {
     if (context === "hide") return [];
-    if (level === "region") {
-      const shown = new Set(areas.map((a) => a.id));
-      return REGIONS.filter((r) => !shown.has(r.key)).map((r) => ({ id: r.key, d: r.d }));
+    const shapes: { id: string; d: string }[] = [];
+    if (context === "states") {
+      if (level === "region") {
+        const shown = new Set(areas.map((a) => a.id));
+        shapes.push(...REGIONS.filter((r) => !shown.has(r.key)).map((r) => ({ id: r.key, d: r.d })));
+      } else {
+        // states outside the filter, plus the filtered ones while their municipalities load
+        const inFilter = new Set((filteredStates ?? STATES).map((s) => s.uf));
+        const outside = STATES.filter((s) => !inFilter.has(s.uf) || (level === "municipality" && loading));
+        shapes.push(...outside.map((s) => ({ id: s.uf, d: s.d })));
+      }
     }
-    // states outside the filter, plus the filtered ones while their municipalities load
-    const inFilter = new Set((filteredStates ?? STATES).map((s) => s.uf));
-    const shapes: { id: string; d: string }[] = STATES.filter((s) => !inFilter.has(s.uf) || (level === "municipality" && loading)).map((s) => ({
-      id: s.uf,
-      d: s.d,
-    }));
-    // areas rejected by areaFilter
+    // areas rejected by areaFilter belong to the filtered states, so they keep their lines
     if (areas !== allAreas) {
       const shown = new Set(areas.map((a) => a.id));
       for (const a of allAreas) if (!shown.has(a.id)) shapes.push({ id: a.id, d: areaPath(a) });
     }
     return shapes;
   }, [context, level, areas, allAreas, filteredStates, loading]);
+  const showSilhouette =
+    context === "show" && (Boolean(filteredStates) || areas !== allAreas || (level === "municipality" && loading));
+
+  // border lines are clipped to the filtered states, so they never cross the context
+  const clipId = `bm-clip-${useId().replace(/[^a-zA-Z0-9-]/g, "")}`;
 
   // ---- view ----
   const viewBox = useMemo(() => {
@@ -508,9 +521,9 @@ export function BrazilMap({
   // where a detailed edge runs outside its overview neighbor there would be a sliver of background;
   // the overview shapes of the same states, drawn underneath in the context color, fill it
   const underlay =
-    context === "show" && detailMode === "detail" && level !== "region" && filteredStates ? filteredStates : [];
+    context !== "hide" && detailMode === "detail" && level !== "region" && filteredStates ? filteredStates : [];
   // the overview coastline would run beside the detailed one, so it is left out in detail mode
-  const showCountryOutline = showOutline && detailMode === "overview" && (!filteredStates || context === "show");
+  const showCountryOutline = showOutline && detailMode === "overview" && (!filteredStates || context !== "hide");
   const borderLines =
     lineMode === "region" ? REGION_BORDERS : lineMode === "state" && detailedOutlines.length === 0 ? STATE_BORDERS : null;
 
@@ -540,6 +553,14 @@ export function BrazilMap({
           hideTooltip();
         }}
       >
+        {showSilhouette && <path className="bm-silhouette" d={COUNTRY_OUTLINE} fillRule="evenodd" aria-hidden="true" />}
+        {filteredStates && borderLines && (
+          <clipPath id={clipId}>
+            {filteredStates.map((s) => (
+              <path key={s.uf} d={s.d} fillRule="evenodd" />
+            ))}
+          </clipPath>
+        )}
         {contextShapes.length > 0 && (
           <g className="bm-context" aria-hidden="true">
             {contextShapes.map((s) => (
@@ -582,7 +603,13 @@ export function BrazilMap({
             ))}
           </g>
         )}
-        {borderLines && <path className={`bm-borders bm-borders-${lineMode}`} d={borderLines} />}
+        {borderLines && (
+          <path
+            className={`bm-borders bm-borders-${lineMode}`}
+            d={borderLines}
+            clipPath={filteredStates ? `url(#${clipId})` : undefined}
+          />
+        )}
         {detailedOutlines.length > 0 && (
           <g className="bm-state-outlines" aria-hidden="true">
             {detailedOutlines.map((d, i) => (

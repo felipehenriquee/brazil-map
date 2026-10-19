@@ -161,8 +161,23 @@ describe("<BrazilMap>", () => {
   it("filters by region and zooms into it, keeping the rest as context", () => {
     const html = render({ regions: ["northeast"] });
     expect(count(html, /data-area="/g)).toBe(9);
-    expect(count(html, /<g class="bm-context"/g)).toBe(1);
+    // the rest of the country is one silhouette, without the other states' lines
+    expect(count(html, /class="bm-silhouette"/g)).toBe(1);
+    expect(html).not.toContain("bm-context");
     expect(html).not.toContain(`viewBox="${VIEW_BOX}"`);
+  });
+
+  it("can show the other states with their borders instead of a silhouette", () => {
+    const html = render({ regions: ["northeast"], context: "states" });
+    expect(html).not.toContain("bm-silhouette");
+    expect(count(html.split('class="bm-context"')[1].split("</g>")[0], /<path /g)).toBe(18);
+  });
+
+  it("clips border lines to the filtered states", () => {
+    const html = render({ states: ["CE"], borders: "region" });
+    expect(html).toMatch(/<clipPath id="bm-clip-[\w-]+"><path [^>]*><\/path><\/clipPath>/);
+    expect(html).toMatch(/class="bm-borders bm-borders-region"[^>]*clip-path="url\(#bm-clip-/);
+    expect(render({ borders: "region" })).not.toContain("clip-path");
   });
 
   it("hides the context when asked", () => {

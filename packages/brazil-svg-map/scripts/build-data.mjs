@@ -37,6 +37,10 @@ const PADDING = 8;
 // simplification tolerance = width of the area / DETAIL; at the size a state is shown when the
 // map zooms into it, this keeps the error under one pixel
 const DETAIL = 1000;
+// the IBGE mesh has tiny gaps between some neighbors (~1–3 km²); dissolved, they become holes that
+// show the background. -clean gives each gap to a neighbor. It only fills empty space, so enclaves
+// (which are polygons themselves) are never affected, whatever their size.
+const CLEAN = ["-clean", "gap-fill-area=10km2"];
 const OVERVIEW_DIGITS = 1;
 const DETAIL_DIGITS = 2;
 
@@ -134,6 +138,7 @@ try {
   console.log(`overview, tolerance ${countryTolerance} m…`);
   await mapshaper([
     "-i", shp, "encoding=utf8", "name=municipalities",
+    ...CLEAN,
     "-simplify", `interval=${countryTolerance}`, "keep-shapes",
     ...geojson("overview", 0.00001),
     "-dissolve", "SIGLA_UF", "copy-fields=CD_UF,NM_UF,CD_REGIAO", "+", "name=states",
@@ -168,6 +173,7 @@ try {
         tolerances[uf] = await tolerance(join(split, `${uf}.shp`));
         await mapshaper([
           "-i", join(split, `${uf}.shp`), "encoding=utf8", "name=municipalities",
+          ...CLEAN,
           "-simplify", `interval=${tolerances[uf]}`, "keep-shapes",
           ...geojson(`detail-${uf}`, 0.000001),
           "-dissolve", "+", "name=outline",

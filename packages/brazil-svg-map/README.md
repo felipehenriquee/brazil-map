@@ -24,7 +24,7 @@ import "brazil-svg-map/styles.css";
 | `regions` | `RegionKey[]` | Only these regions: `north`, `northeast`, `southeast`, `south`, `centralWest` |
 | `states` | `StateCode[]` | Only these states (`"CE"`, `"SP"`…); takes precedence over `regions` |
 | `areaFilter` | `(area) => boolean` | Finer filter on the areas of the current level (e.g. municipalities of one intermediate region); rejected areas are muted like those outside the filter and the view zooms to the rest. Keep it memoized |
-| `context` | `"show"` (default) \| `"hide"` | Areas outside the filter: muted for context, or not drawn |
+| `context` | `"show"` (default) \| `"states"` \| `"hide"` | The rest of the country when filtering: a muted silhouette without any lines, the other states muted with their borders, or nothing. Border lines (`borders`) are clipped to the filtered states |
 | `zoomToFilter` | `boolean` (default `true`) | Fit the view to the filtered area |
 | `zoomDuration` | `number` (default `600`) | Duration in ms of the animated zoom when the view changes; `0` jumps. Skipped with `prefers-reduced-motion` |
 | `borders` | `"none"` \| `"state"` \| `"region"` | Lines on top; default `"state"` at municipality level |
@@ -120,12 +120,12 @@ Import `brazil-svg-map/styles.css` and override the variables:
 
 ```css
 :root {
-  --bm-area-fill: #cbd5e1;
-  --bm-area-highlight: #0f172a;
-  --bm-context-fill: #e8edf3;
+  --bm-area-fill: #d6dee8;
+  --bm-area-highlight: #5b6b82;
+  --bm-context-fill: #eef2f6;
   --bm-border-state: #fff;
-  --bm-border-region: #475569;
-  --bm-region-northeast: #f97316;   /* and the other --bm-region-* */
+  --bm-border-region: #8b9ab0;
+  --bm-region-northeast: #ffd0aa;   /* and the other --bm-region-* */
   --bm-tooltip-background: #fff;
 }
 ```

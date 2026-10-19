@@ -17,6 +17,7 @@ import {
 
 type ColorMode = "region" | "single";
 type Borders = "none" | "state" | "region";
+type Context = "show" | "states" | "hide";
 
 const LEVELS: { value: MapLevel; label: string }[] = [
   { value: "region", label: "Regiões" },
@@ -24,14 +25,14 @@ const LEVELS: { value: MapLevel; label: string }[] = [
   { value: "municipality", label: "Municípios" },
 ];
 
-// one color per state: hues spread by the golden angle so states with nearby codes (usually
+// one pastel color per state: hues spread by the golden angle so states with nearby codes (usually
 // neighbors) get distant hues
-const STATE_COLORS = new Map(STATES.map((s, i) => [s.uf, `hsl(${Math.round((i * 137.508) % 360)} 65% 55%)`]));
+const STATE_COLORS = new Map(STATES.map((s, i) => [s.uf, `hsl(${Math.round((i * 137.508) % 360)} 70% 82%)`]));
 
 // intermediate regions of the chosen state (Minas Gerais has the most: 13)
 const SUBREGION_COLORS = [
-  "#3b82f6", "#14b8a6", "#8b5cf6", "#84cc16", "#ec4899", "#f97316", "#eab308",
-  "#6366f1", "#ef4444", "#06b6d4", "#10b981", "#d946ef", "#f59e0b",
+  "#a8c8f0", "#9fdccc", "#cbbcf2", "#cde8a6", "#f5b8d4", "#ffcfa6", "#f6e19a",
+  "#b7bdf3", "#f5b3b0", "#a6e0ef", "#a8e2c4", "#e9b8ef", "#fbd59b",
 ];
 
 function formatArea(km2: number | null) {
@@ -44,7 +45,7 @@ export default function App() {
   const [state, setState] = useState<StateCode | null>(null);
   const [colorMode, setColorMode] = useState<ColorMode>("region");
   const [borders, setBorders] = useState<Borders>("state");
-  const [showContext, setShowContext] = useState(true);
+  const [context, setContext] = useState<Context>("show");
   const [selected, setSelected] = useState<Municipality | null>(null);
   const [subregions, setSubregions] = useState<string[]>([]);
 
@@ -210,9 +211,13 @@ export default function App() {
             </select>
           </label>
 
-          <label className="check">
-            <input type="checkbox" checked={showContext} onChange={(e) => setShowContext(e.target.checked)} />
-            Mostrar o resto do país ao filtrar
+          <label className="control">
+            <span>Resto do país ao filtrar</span>
+            <select value={context} onChange={(e) => setContext(e.target.value as Context)}>
+              <option value="show">Silhueta, sem linhas</option>
+              <option value="states">Estados vizinhos com divisas</option>
+              <option value="hide">Esconder</option>
+            </select>
           </label>
         </aside>
 
@@ -242,7 +247,7 @@ export default function App() {
             regions={region ? [region] : undefined}
             states={state ? [state] : undefined}
             areaFilter={level === "municipality" ? areaFilter : undefined}
-            context={showContext ? "show" : "hide"}
+            context={context}
             borders={borders}
             getFill={getFill}
             highlighted={selected ? String(selected.ibgeCode) : null}

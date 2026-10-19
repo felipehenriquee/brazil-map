@@ -3,27 +3,27 @@
  * To customize, override the --bm-* variables in a selector of your own (e.g. :root or .myMap).
  */
 :root {
-    --bm-area-fill: #cbd5e1;
+    --bm-area-fill: #d6dee8;
     --bm-area-stroke: #ffffff;
     --bm-area-stroke-width: 0.8px;
     --bm-municipality-stroke-width: 0.3px;
-    --bm-area-highlight: #0f172a;
-    --bm-context-fill: #e8edf3;
+    --bm-area-highlight: #5b6b82;
+    --bm-context-fill: #eef2f6;
     --bm-context-stroke: #ffffff;
-    --bm-water-fill: #bfdbfe;
+    --bm-water-fill: #cfe4f7;
     --bm-border-state: #ffffff;
     --bm-border-state-width: 1.2px;
-    --bm-border-region: #475569;
+    --bm-border-region: #8b9ab0;
     --bm-border-region-width: 1.6px;
-    --bm-outline: #94a3b8;
+    --bm-outline: #b4c0cf;
     --bm-outline-width: 1px;
     --bm-transition: .2s ease;
 
-    --bm-region-north: #22c55e;
-    --bm-region-northeast: #f97316;
-    --bm-region-southeast: #8b5cf6;
-    --bm-region-south: #3b82f6;
-    --bm-region-centralWest: #eab308;
+    --bm-region-north: #b5e3c4;
+    --bm-region-northeast: #ffd0aa;
+    --bm-region-southeast: #d4c5f5;
+    --bm-region-south: #b3d4f5;
+    --bm-region-centralWest: #f7e3a3;
 
     --bm-tooltip-background: #ffffff;
     --bm-tooltip-text: #0f172a;
@@ -31,7 +31,7 @@
     --bm-tooltip-border: #e2e8f0;
     --bm-tooltip-radius: 12px;
     --bm-tooltip-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
-    --bm-tooltip-image-background: #e8edf3;
+    --bm-tooltip-image-background: #eef2f6;
 }
 
 .bm-map {
@@ -69,6 +69,12 @@
     stroke-width: 2.5px;
 }
 
+/* the rest of the country when filtering: one shape, no lines */
+.bm-silhouette {
+    fill: var(--bm-context-fill);
+    stroke: none;
+    pointer-events: none;
+}
 .bm-context path {
     fill: var(--bm-context-fill);
     stroke: var(--bm-context-stroke);
